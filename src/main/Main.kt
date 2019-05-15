@@ -13,6 +13,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
 
     applicationInstall()
+    applicationShutdown()
 
     routing {
 

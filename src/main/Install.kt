@@ -26,10 +26,6 @@ fun Application.applicationInstall() {
         permanentRedirect = true
     }
 
-    install(ShutDownUrl.ApplicationCallFeature) {
-        shutDownUrl = "/shutdown/94a64ef14d18f64ce60be18e88547ab3"
-        exitCodeSupplier = { 0 } // ApplicationCall.() -> Int
-    }
 
 }
 
