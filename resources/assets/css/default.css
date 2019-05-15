@@ -1,0 +1,29 @@
+html, body {
+    width: 100%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Nunito', PingFang SC, Microsoft YaHei, STXihei, sans-serif;
+    cursor: default;
+    color: #212529;
+}
+
+*::-webkit-scrollbar {
+    display: none
+}
+
+input:focus {
+    outline: 0;
+}
+
+li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
