@@ -1,49 +1,23 @@
 package database
 
-import utils.println
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 
-inline fun <reified T> databaseCreate(): String {
-    val clazz = T::class.java
-    return clazz.declaredFields.joinToString(",") { filed ->
-        val fieldType = if (filed.type.simpleName == "int") "INTEGER" else "TEXT"
-        val fieldConstraint = if (filed.name == "id") "PRIMARY KEY" else "NOT NULL"
-        "${filed.name} $fieldType $fieldConstraint"
-    }.let {
-        "CREATE TABLE ${clazz.simpleName} ($it)"
-    }
-}
-
-inline fun <reified T> databaseInsert(data: T): String {
-    val clazz = T::class.java
-    val tableName = clazz.simpleName
-    val fields = clazz.declaredFields.joinToString(",") { it.name }
-    val fieldValues = clazz.declaredFields.joinToString(",") {
-        val accessFlag = it.isAccessible
-        it.isAccessible = true
-        val value = it.get(data)
-        it.isAccessible = accessFlag
-        "'$value'"
-    }
-    return "INSERT INTO $tableName ($fields) VALUES ($fieldValues);"
-}
-
 abstract class Database {
 
-    abstract val filePath: String
+    abstract val sql: DatabaseSQL<*>
 
     private fun connection(block: Connection.() -> Unit) {
         Class.forName("org.sqlite.JDBC")
-        DriverManager.getConnection("jdbc:sqlite:$filePath").use(block)
+        DriverManager.getConnection("jdbc:sqlite:${sql.filePath}").use(block)
     }
 
     fun create(sql: String) {
         try {
             connection { createStatement().use { it.executeUpdate(sql) } }
         } catch (e: Exception) {
-            e.message?.println()
+
         }
     }
 
@@ -59,16 +33,56 @@ abstract class Database {
 
     fun delete(sql: String) = insert(sql)
 
-    fun select(sql: String, block: ResultSet.() -> Unit) = connection {
-        autoCommit = false
-        createStatement().use { statement ->
-            statement.executeQuery(sql).use {
-                while (it.next()) {
-                    block(it)
+    fun <T> select(sql: String, block: ResultSet.() -> T) = ArrayList<T>().apply {
+        connection {
+            autoCommit = false
+            createStatement().use { statement ->
+                statement.executeQuery(sql).use {
+                    while (it.next()) {
+                        add(block(it))
+                    }
                 }
             }
         }
-    }
+    }.toList()
 
 }
 
+class DatabaseSQL<T>(private val clazz: Class<T>) {
+
+    val name: String get() = clazz.simpleName
+
+    val deleteAll: String get() = "DELETE from $name;"
+
+    val selectAll: String get() = "SELECT * FROM $name;"
+
+    val filePath :String get() =  "database/${clazz.simpleName}.db"
+
+    val create: String
+        get() = clazz.declaredFields.joinToString(",") { filed ->
+            val fieldType = when (filed.type.simpleName) {
+                "int", "long", "byte", "short" -> "INTEGER"
+                "float", "double" -> "REAL"
+                else -> "TEXT"
+            }
+            val fieldConstraint = if (filed.name == "id") "PRIMARY KEY" else "NOT NULL"
+            "${filed.name} $fieldType $fieldConstraint"
+        }.let {
+            "create TABLE ${clazz.simpleName} ($it)"
+        }
+
+    fun insert(data: T): String {
+        val tableName = clazz.simpleName
+        val fields = clazz.declaredFields.joinToString(",") { it.name }
+        val fieldValues = clazz.declaredFields.joinToString(",") {
+            val accessFlag = it.isAccessible
+            it.isAccessible = true
+            val value = it.get(data)
+            it.isAccessible = accessFlag
+            "'$value'"
+        }
+        return "insert INTO $tableName ($fields) VALUES ($fieldValues);"
+    }
+
+
+}

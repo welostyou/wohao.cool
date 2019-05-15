@@ -1,6 +1,6 @@
 package pages
 
-import database.LabelsDatabase
+import database.LabelDatabase
 import io.ktor.application.call
 import io.ktor.html.respondHtml
 import io.ktor.routing.Routing
@@ -28,7 +28,7 @@ fun Routing.indexFrame() {
                     }
 
                     ul {
-                        LabelsDatabase.getAll().forEach {
+                        LabelDatabase.get().forEach {
                             li {
                                 span {
                                     style = "color: #${it.color}"
