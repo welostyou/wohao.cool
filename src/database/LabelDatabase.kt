@@ -1,7 +1,6 @@
 package database
 
 import bean.Label
-import utils.databasePath
 
 object LabelDatabase : Database() {
 

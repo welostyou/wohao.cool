@@ -48,6 +48,7 @@ abstract class Database {
 
 }
 
+
 class DatabaseSQL<T>(private val clazz: Class<T>) {
 
     val name: String get() = clazz.simpleName

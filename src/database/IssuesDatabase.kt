@@ -1,9 +1,9 @@
 package database
 
-import bean.Issues
+import bean.Issue
 
 object IssuesDatabase : Database() {
 
-    override val sql = DatabaseSQL(Issues::class.java)
+    override val sql = DatabaseSQL(Issue::class.java)
 
 }
