@@ -42,5 +42,4 @@ fun String.githubTimeAfter() = outputDateFormatter.parse(this).view()
 fun main() {
     "2019-05-15T08:44:29Z".githubTimeFormat().println()
     "2019-05-15 16:44".githubTimeAfter().println()
-
 }

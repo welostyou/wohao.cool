@@ -5,6 +5,7 @@ import api.apiOfTodayInHistory
 import io.ktor.application.Application
 import io.ktor.routing.routing
 import pages.indexFrame
+import secret.applicationShutdown
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
