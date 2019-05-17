@@ -30,4 +30,3 @@ fun IssuesJson.toUseDateBase(): Issues {
     val useBody = Path.githubMarkdown.httpPost().body(body).responseString!!
     return Issues(id, number, title, useCreatedAt, useBody, useLabel)
 }
-
