@@ -11,7 +11,6 @@ import io.ktor.routing.Routing
 import io.ktor.routing.post
 import utils.jsonObject
 import utils.println
-import java.lang.Exception
 
 fun Routing.githubWebhooks() {
 
@@ -36,7 +35,7 @@ fun getIssuesPayload(json: String) = ObjectMapper().readTree(json).let { payload
     val action = try {
         IssuesAction.valueOf(payload.path("action").asText().toUpperCase())
     } catch (e: Exception) {
-        println("Issues action not opened, edited or deleted.")
+        println("Issues action not opened, edited, deleted, labeled or unlabeled.")
         null
     }
     payload.path("issue").let { issue ->
