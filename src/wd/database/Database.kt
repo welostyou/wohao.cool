@@ -56,7 +56,7 @@ class DatabaseSQL<T>(private val clazz: Class<T>) {
 
     val selectAll: String get() = "SELECT * FROM $name;"
 
-    val filePath :String get() =  "wd.database/${clazz.simpleName}.db"
+    val filePath :String get() =  "home/program/database/${clazz.simpleName}.db"
 
     val create: String
         get() = clazz.declaredFields.joinToString(",") { filed ->
