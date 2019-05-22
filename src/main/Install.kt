@@ -21,11 +21,10 @@ fun Application.applicationInstall() {
 
     install(ContentNegotiation) { jackson { enable(SerializationFeature.INDENT_OUTPUT) } }
 
-    install(HttpsRedirect) {
-        sslPort = 443
-        permanentRedirect = true
-    }
-
+//    install(HttpsRedirect) {
+//        sslPort = 443
+//        permanentRedirect = true
+//    }
 
 }
 

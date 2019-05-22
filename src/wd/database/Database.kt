@@ -1,4 +1,4 @@
-package database
+package wd.database
 
 import java.sql.Connection
 import java.sql.DriverManager
@@ -48,7 +48,6 @@ abstract class Database {
 
 }
 
-
 class DatabaseSQL<T>(private val clazz: Class<T>) {
 
     val name: String get() = clazz.simpleName
@@ -57,7 +56,7 @@ class DatabaseSQL<T>(private val clazz: Class<T>) {
 
     val selectAll: String get() = "SELECT * FROM $name;"
 
-    val filePath :String get() =  "database/${clazz.simpleName}.db"
+    val filePath :String get() =  "wd.database/${clazz.simpleName}.db"
 
     val create: String
         get() = clazz.declaredFields.joinToString(",") { filed ->
@@ -66,7 +65,7 @@ class DatabaseSQL<T>(private val clazz: Class<T>) {
                 "float", "double" -> "REAL"
                 else -> "TEXT"
             }
-            val fieldConstraint = if (filed.name == "id") "PRIMARY KEY" else "NOT NULL"
+            val fieldConstraint = if (filed.name == "id") "PRIMARY KEY NOT NULL" else "NOT NULL"
             "${filed.name} $fieldType $fieldConstraint"
         }.let {
             "create TABLE ${clazz.simpleName} ($it)"

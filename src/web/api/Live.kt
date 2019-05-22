@@ -1,4 +1,4 @@
-package api
+package web.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.application.call
@@ -9,7 +9,7 @@ import org.jsoup.Jsoup
 import java.net.URL
 
 fun Routing.apiOfLive() {
-    get("/api/live/{platform}/{room_id}") {
+    get("/web/api/live/{platform}/{room_id}") {
         call.apply {
             val platform = parameters["platform"]
             val id = parameters["room_id"]
@@ -47,7 +47,7 @@ fun getDouyuRoomIsLive(roomId: String): Boolean {
 }
 
 fun getLongzhuRoomIsLive(roomId: String): Boolean {
-    val jsonLongzhu = URL("http://searchapi.longzhu.com/api/search/misc?key=$roomId").readText()
+    val jsonLongzhu = URL("http://searchapi.longzhu.com/web.api/search/misc?key=$roomId").readText()
     return ObjectMapper().readTree(jsonLongzhu)
         .path("data")
         .path("hosts")

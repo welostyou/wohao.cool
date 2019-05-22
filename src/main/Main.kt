@@ -1,11 +1,14 @@
 package main
 
-import api.apiOfLive
-import api.apiOfTodayInHistory
+import github.webhooks.githubWebhooks
 import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.response.respondText
+import io.ktor.routing.get
 import io.ktor.routing.routing
-import pages.indexFrame
 import secret.applicationShutdown
+import web.api.apiOfLive
+import web.api.apiOfTodayInHistory
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -20,13 +23,17 @@ fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
 
         routingInstall()
         static()
-        pages()
 
         apiOfLive()
         apiOfTodayInHistory()
 
-        indexFrame()
+        githubWebhooks()
+
+        get("/") { call.respondText("wohao.cool") }
 
     }
 }
 
+/**
+ * 如果转服务器，要把https重定向的安装取消注释，并且要把GitHubApiPath中repo改回wohao.cool
+ */
