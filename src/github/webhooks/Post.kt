@@ -20,7 +20,7 @@ fun Routing.githubWebhooks() {
         call.respondText("ojerk!")
         when (event) {
             Event.ISSUES, Event.ISSUE_COMMENT -> {
-                val issuePayload = getIssuesPayload(payload)
+                val issuePayload = getIssuePayload(payload)
                 issuePayload?.println()
             }
             Event.LABEL -> {
@@ -31,9 +31,9 @@ fun Routing.githubWebhooks() {
     }
 }
 
-fun getIssuesPayload(json: String) = ObjectMapper().readTree(json).let { payload ->
+fun getIssuePayload(json: String) = ObjectMapper().readTree(json).let { payload ->
     val action = try {
-        IssuesAction.valueOf(payload.path("action").asText().toUpperCase())
+        IssueAction.valueOf(payload.path("action").asText().toUpperCase())
     } catch (e: Exception) {
         println("Issues action not opened, edited, deleted, labeled or unlabeled.")
         null
