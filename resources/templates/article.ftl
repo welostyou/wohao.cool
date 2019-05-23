@@ -18,7 +18,6 @@
             if (e && e.keyCode === 13) {
                 console.info(ev.value);
                 //TODO 跳转到搜索页面
-
                 ev.value = '';
             }
         }
