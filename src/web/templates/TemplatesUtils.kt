@@ -9,14 +9,14 @@ fun getFreeMarkerContent(data: TemplatesData) =
 val Label.showOnAllLabels
     get() = """
         <span class="State mb-2 f5" style="background-color: #$color">
-        <a class="text-white" href="/labels/$id">$name</a>
+        <a class="text-white" href="/toLabels/$id">$name</a>
         </span>
     """
 
 val Label.showOnLabels
     get() = """
         <span class="State mr-1 f5" style="background-color: #$color">
-        <a class="text-white" href="/labels/$id">$name</a>
+        <a class="text-white" href="/toLabels/$id">$name</a>
         </span>
     """
 
