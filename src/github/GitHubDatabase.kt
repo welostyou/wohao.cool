@@ -1,8 +1,6 @@
 package github
 
 import utils.Database
-import utils.println
-import java.lang.Exception
 
 abstract class GitHubCommonDatabase : Database() {
     override val fileName = "github"
