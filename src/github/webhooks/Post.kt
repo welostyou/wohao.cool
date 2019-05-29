@@ -11,7 +11,6 @@ import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import io.ktor.routing.post
 import utils.jsonObject
-import utils.println
 import utils.printlnGitHubWarn
 
 fun Routing.githubWebhooks() {
