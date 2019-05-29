@@ -3,6 +3,9 @@ package web
 import io.ktor.application.call
 import io.ktor.routing.Routing
 import io.ktor.routing.get
+import utils.respondListPage
+import utils.respondMarkdownPage
+import utils.respondSearchPage
 
 fun Routing.pages() {
 
