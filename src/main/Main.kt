@@ -2,13 +2,11 @@ package main
 
 import github.webhooks.githubWebhooks
 import io.ktor.application.Application
-import io.ktor.application.call
-import io.ktor.response.respondText
-import io.ktor.routing.get
 import io.ktor.routing.routing
 import secret.applicationShutdown
 import web.api.apiOfLive
 import web.api.apiOfTodayInHistory
+import web.pages
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -29,8 +27,7 @@ fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
 
         githubWebhooks()
 
-        get("/") { call.respondText("wohao.cool") }
-
+        pages()
     }
 }
 

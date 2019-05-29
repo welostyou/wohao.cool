@@ -1,6 +1,7 @@
 package github.webhooks
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import github.GitHubDatabase
 import github.Label
 import github.getIssueByNumber
 import io.ktor.application.call
@@ -11,6 +12,7 @@ import io.ktor.routing.Routing
 import io.ktor.routing.post
 import utils.jsonObject
 import utils.println
+import utils.printlnGitHubWarn
 
 fun Routing.githubWebhooks() {
 
@@ -19,29 +21,43 @@ fun Routing.githubWebhooks() {
         val event = call.request.header("X-GitHub-Event")?.toUpperCase()?.let(Event::valueOf)
         call.respondText("ojerk!")
         when (event) {
-            Event.ISSUES, Event.ISSUE_COMMENT -> {
-                val issuePayload = getIssuePayload(payload)
-                issuePayload?.println()
-            }
-            Event.LABEL -> {
-                val labelPayload = getLabelPayload(payload)
-                labelPayload.println()
+            Event.ISSUE_COMMENT -> getIssuePayload(payload)?.also { (action, issue) ->
+                issue?.let {
+                    when (action) {
+                        IssueAction.CREATED, IssueAction.DELETED ->
+                            GitHubDatabase.Issues.editComment(it.id, it.comments)
+                        else -> null
+                    }
+                } ?: printlnGitHubWarn("Issue 获取失败")
+            } ?: printlnGitHubWarn("Issue 并不是管理员创建的")
+
+            Event.ISSUES -> getIssuePayload(payload)?.also { (action, issue) ->
+                issue?.let {
+                    when (action) {
+                        IssueAction.OPENED -> GitHubDatabase.Issues.open(issue)
+                        IssueAction.DELETED, IssueAction.TRANSFERRED -> GitHubDatabase.Issues.delete(issue.id)
+                        else -> GitHubDatabase.Issues.edit(issue)
+                    }
+                } ?: printlnGitHubWarn("Issue 获取失败")
+            } ?: printlnGitHubWarn("Issue 并不是管理员创建的")
+
+            Event.LABEL -> getLabelPayload(payload).also { (action, label) ->
+                when (action) {
+                    LabelAction.DELETED -> GitHubDatabase.Labels.delete(label.id)
+                    LabelAction.EDITED -> GitHubDatabase.Labels.edit(label)
+                    LabelAction.CREATED -> GitHubDatabase.Labels.create(label)
+                }
             }
         }
     }
 }
 
 fun getIssuePayload(json: String) = ObjectMapper().readTree(json).let { payload ->
-    val action = try {
-        IssueAction.valueOf(payload.path("action").asText().toUpperCase())
-    } catch (e: Exception) {
-        println("Issues action not opened, edited, deleted, labeled or unlabeled.")
-        null
-    }
+    val action = IssueAction.valueOf(payload.path("action").asText().toUpperCase())
     payload.path("issue").let { issue ->
         val number = issue.path("number").asInt()
         val isMe = issue.path("user").path("login").asText() == "welostyou"
-        if (isMe && action != null) IssuePayload(action, getIssueByNumber(number)) else null
+        if (isMe) IssuePayload(action, getIssueByNumber(number)) else null
     }
 }
 

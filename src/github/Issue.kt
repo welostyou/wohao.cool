@@ -4,7 +4,7 @@ import com.beust.klaxon.Json
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import utils.klaxonConverter
-import utils.println
+import utils.printlnGitHubWarn
 import utils.responseString
 
 @Target(AnnotationTarget.FIELD)
@@ -44,7 +44,7 @@ fun getIssueByNumber(number: Int) = try {
             .parse<Issue>(it)
     }
 } catch (e: Exception) {
-    e.message?.println()
+    e.message?.let(::printlnGitHubWarn)
     null
 }
 

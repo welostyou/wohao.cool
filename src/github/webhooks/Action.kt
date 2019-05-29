@@ -1,5 +1,23 @@
 package github.webhooks
 
-enum class IssueAction { DELETED, EDITED, OPENED, LABELED, UNLABELED }
-
 enum class LabelAction { DELETED, EDITED, CREATED }
+
+enum class IssueAction {
+    CREATED,
+    OPENED,
+    EDITED,
+    DELETED,
+    TRANSFERRED,
+    PINNED,
+    UNPINNED,
+    CLOSED,
+    REOPENED,
+    ASSIGNED,
+    UNASSIGNED,
+    LABELED,
+    UNLABELED,
+    LOCKED,
+    UNLOCKED,
+    MILESTONED,
+    DEMILESTONED
+}

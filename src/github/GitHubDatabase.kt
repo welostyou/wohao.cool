@@ -1,30 +1,14 @@
 package github
 
 import utils.Database
+import utils.printlnGitHubInfo
+import java.sql.ResultSet
 
 abstract class GitHubCommonDatabase : Database() {
     override val fileName = "github"
 }
 
 object GitHubDatabase {
-
-    object Comments : GitHubCommonDatabase() {
-
-        init {
-            create("CREATE TABLE COMMENTS (ID INTEGER PRIMARY KEY NOT NULL, COMMENT INTEGER NOT NULL)")
-        }
-
-        fun create(id: Long, comment: Int) = insert("INSERT INTO COMMENTS (ID,COMMENT) VALUES ($id, $comment);")
-
-        fun update(id: Long, comment: Int) = update("UPDATE COMMENTS SET COMMENT = $comment WHERE ID = $id;")
-
-        fun delete(id: Long) = delete("DELETE FROM COMMENTS WHERE ID = $id;")
-
-        operator fun get(id: Long) = select("SELECT * FROM COMMENTS WHERE ID = $id;") {
-            getInt("COMMENT")
-        }.singleOrNull()
-
-    }
 
     object Labels : GitHubCommonDatabase() {
 
@@ -34,17 +18,26 @@ object GitHubDatabase {
 
         fun create(label: Label) = with(label) {
             insert("INSERT INTO LABELS (ID,NAME,COLOR) VALUES ($id, '$name','$color');")
+            printlnGitHubInfo("新建Label：${label.name}")
         }
 
-        fun update(label: Label) = with(label) {
+        fun edit(label: Label) = with(label) {
             update("UPDATE LABELS SET NAME = '$name',COLOR = '$color' WHERE ID = $id;")
+            printlnGitHubInfo("修改Label：${label.name}")
         }
 
-        fun delete(id: Long) = delete("DELETE FROM LABELS WHERE ID = $id;")
+        fun delete(id: Long) {
+            delete("DELETE FROM LABELS WHERE ID = $id;")
+            printlnGitHubInfo("删除Label：$id")
+        }
 
         operator fun get(id: Long) = select("SELECT * FROM LABELS WHERE ID = $id;") {
             Label(id, getString("NAME"), getString("COLOR"))
         }.singleOrNull()
+
+        fun getAll() = select("SELECT * FROM LABELS;") {
+            Label(getLong("ID"), getString("NAME"), getString("COLOR"))
+        }
 
     }
 
@@ -56,6 +49,7 @@ object GitHubDatabase {
                         "ID INTEGER PRIMARY KEY NOT NULL, " +
                         "TITLE TEXT NOT NULL," +
                         "NUMBER INTEGER NOT NULL," +
+                        "COMMENTS INTEGER NOT NULL," +
                         "LABELS TEXT NOT NULL," +
                         "CREATEDAT TEXT NOT NULL," +
                         "UPDATEDAT TEXT NOT NULL," +
@@ -63,42 +57,55 @@ object GitHubDatabase {
             )
         }
 
-        fun create(issue: Issue) = with(issue) {
+        fun open(issue: Issue) = with(issue) {
             insert(
-                "INSERT INTO ISSUES (ID,TITLE,NUMBER,LABELS,CREATEDAT,UPDATEDAT,BODY) " +
-                        "VALUES ($id, '$title','$number','${labels.toDatabase()}','$createdAt','$updatedAt','$body');"
+                "INSERT INTO ISSUES (ID,TITLE,NUMBER,COMMENTS,LABELS,CREATEDAT,UPDATEDAT,BODY) " +
+                        "VALUES ($id, '$title',$number,$comments,'${labels.toDatabase()}','$createdAt','$updatedAt','$body');"
             )
-            GitHubDatabase.Comments.create(id, comments)
+            printlnGitHubInfo("新建Issue:$title")
         }
 
-        fun update(issue: Issue) = with(issue) {
+        fun editComment(id: Long, comment: Int) {
+            update("UPDATE ISSUES SET COMMENTS = $comment WHERE ID = $id;")
+            printlnGitHubInfo("修改Comment:issueId=$id,comment=$comment")
+        }
+
+        fun edit(issue: Issue) = with(issue) {
             update(
                 "UPDATE ISSUES SET TITLE = '$title'," +
                         "NUMBER = $number, " +
+                        "COMMENTS = $comments, " +
                         "LABELS = '${labels.toDatabase()}', " +
                         "CREATEDAT = '$createdAt', " +
                         "UPDATEDAT = '$updatedAt', " +
                         "BODY = '$body' " +
                         "WHERE ID = $id;"
             )
-            GitHubDatabase.Comments.update(id, comments)
+            printlnGitHubInfo("修改Issue:$title")
         }
 
         fun delete(id: Long) {
             delete("DELETE FROM ISSUES WHERE ID = $id;")
-            GitHubDatabase.Comments.delete(id)
+            printlnGitHubInfo("删除Issue:$id")
         }
 
-        operator fun get(id: Long) = select("SELECT * FROM ISSUES WHERE ID = $id;") {
-            val title = getString("TITLE")
-            val number = getInt("NUMBER")
-            val comments = GitHubDatabase.Comments[id] ?: throw Exception("Comments is not find.")
-            val labels = getString("LABELS").toLabels()
-            val createdAt = getString("CREATEDAT")
-            val updateAt = getString("UPDATEDAT")
-            val body = getString("BODY")
-            Issue(id, title, number, comments, labels, createdAt, updateAt, body)
-        }.singleOrNull()
+        fun getIssueByNumber(number: Int) =
+            select("SELECT * FROM ISSUES WHERE NUMBER = $number;", ::toIssue).singleOrNull()
 
+        operator fun get(id: Long) = select("SELECT * FROM ISSUES WHERE ID = $id;", ::toIssue).singleOrNull()
+
+        fun getAll() = select("SELECT * FROM ISSUES;", ::toIssue)
+
+        private fun toIssue(resultSet: ResultSet): Issue {
+            val id = resultSet.getLong("ID")
+            val title = resultSet.getString("TITLE")
+            val number = resultSet.getInt("NUMBER")
+            val comments = resultSet.getInt("COMMENTS")
+            val labels = resultSet.getString("LABELS").toLabels()
+            val createdAt = resultSet.getString("CREATEDAT")
+            val updateAt = resultSet.getString("UPDATEDAT")
+            val body = resultSet.getString("BODY")
+            return Issue(id, title, number, comments, labels, createdAt, updateAt, body)
+        }
     }
 }
