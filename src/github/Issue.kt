@@ -57,7 +57,7 @@ fun getIssueByNumber(number: Int) = try {
             .parse<Issue>(it)
     }
 } catch (e: Exception) {
-    e.message?.let(::printlnGitHubErr)
+    e.message?.let(::println)
     null
 }
 

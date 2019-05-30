@@ -7,7 +7,6 @@ import io.ktor.request.receiveText
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import io.ktor.routing.post
-import utils.printlnGitHubInfo
 
 fun Routing.githubWebhooks() {
 
@@ -30,7 +29,7 @@ fun Routing.githubWebhooks() {
                     if (it.issue != null) GitHubIssueDatabase.edit(it.issue)
                 }
                 else -> {
-                    printlnGitHubInfo("Issue其他改动：${it.action}")
+                    println("Issue其他改动：${it.action}")
                 }
             }
         }
