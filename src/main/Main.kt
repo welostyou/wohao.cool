@@ -32,5 +32,7 @@ fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
 }
 
 /**
- * 如果转服务器，要把https重定向的安装取消注释，并且要把GitHubApiPath中repo改回wohao.cool
+ * 在获取列表的时候要在过滤时候把大小写设置一下
+ *
+ * 写一些指令，比如:all之类的
  */

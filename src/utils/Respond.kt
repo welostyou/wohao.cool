@@ -12,7 +12,7 @@ suspend fun PContext.respondSearchPage(placeholder: String, path: String) {
             default()
             script(type = "text/javascript") {
                 unsafe {
-                    raw("""function searchOnKeyUp(ev) {var e = event || window.event || arguments.callee.caller.arguments[0];if (e && e.keyCode === 13) {var s = ev.value;if(s.length !== 0){ev.value = "";window.open("$path" + s);}}}""")
+                    raw("""function searchOnKeyUp(ev) {var e = event || window.event || arguments.callee.caller.arguments[0];if (e && e.keyCode === 13) {var s = ev.value;if(s.length !== 0){ev.value = "";window.location.href = "$path" + s;}}}""")
                 }
             }
         }

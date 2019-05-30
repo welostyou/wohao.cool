@@ -4,6 +4,8 @@ import com.beust.klaxon.Json
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import utils.*
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 enum class IssueAction {
     OPENED,
@@ -69,6 +71,7 @@ private val dateConverter by lazy {
 
 private val bodyConverter by lazy {
     klaxonConverter(String::class.java) {
+
         it.string?.let(::markdown) ?: throw KlaxonException("body is null.")
     }
 }

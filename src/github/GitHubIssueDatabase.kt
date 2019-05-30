@@ -1,6 +1,8 @@
 package github
 
 import utils.Database
+import utils.decodeURL
+import utils.encodeURL
 import java.sql.ResultSet
 
 object GitHubIssueDatabase : Database() {
@@ -20,7 +22,7 @@ object GitHubIssueDatabase : Database() {
     fun open(issue: Issue) = with(issue) {
         insert(
             "INSERT INTO ISSUES (ID,TITLE,CREATEDAT,BODY) " +
-                    "VALUES ($id, '$title','$createdAt','$body');"
+                    "VALUES ($id, '$title','$createdAt','${body.encodeURL}');"
         )
     }
 
@@ -28,7 +30,7 @@ object GitHubIssueDatabase : Database() {
         update(
             "UPDATE ISSUES SET TITLE = '$title'," +
                     "CREATEDAT = '$createdAt', " +
-                    "BODY = '$body' " +
+                    "BODY = '${body.encodeURL}' " +
                     "WHERE ID = $id;"
         )
     }
@@ -46,7 +48,7 @@ object GitHubIssueDatabase : Database() {
         val id = resultSet.getInt("ID")
         val title = resultSet.getString("TITLE")
         val createdAt = resultSet.getString("CREATEDAT")
-        val body = resultSet.getString("BODY")
+        val body = resultSet.getString("BODY").decodeURL
         return Issue(id, title, createdAt, body)
     }
 
