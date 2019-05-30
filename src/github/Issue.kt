@@ -4,8 +4,30 @@ import com.beust.klaxon.Json
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import utils.klaxonConverter
-import utils.printlnGitHubWarn
+import utils.printlnGitHubErr
 import utils.responseString
+
+enum class IssueAction {
+    OPENED,
+    EDITED,
+    CLOSED,
+    DELETED,
+    REOPENED,
+
+    TRANSFERRED,
+    PINNED,
+    UNPINNED,
+    ASSIGNED,
+    UNASSIGNED,
+    LABELED,
+    UNLABELED,
+    LOCKED,
+    UNLOCKED,
+    MILESTONED,
+    DEMILESTONED
+}
+
+data class IssuePayload(val action: IssueAction, val issue: Issue?, val id: Int)
 
 @Target(AnnotationTarget.FIELD)
 annotation class KlaxonGitHubDate
@@ -15,21 +37,14 @@ annotation class KlaxonGitHubBody
 
 @Suppress("OVERLOADS_WITHOUT_DEFAULT_ARGUMENTS")
 data class Issue @JvmOverloads constructor(
-    val id: Long,
 
+    @Json("number")
+    val id: Int,
     val title: String,
-    val number: Int,
-    val comments: Int,
-
-    val labels: List<Label>,
 
     @Json("created_at")
     @KlaxonGitHubDate
     val createdAt: String,
-
-    @Json("updated_at")
-    @KlaxonGitHubDate
-    val updatedAt: String,
 
     @KlaxonGitHubBody
     val body: String
@@ -44,7 +59,7 @@ fun getIssueByNumber(number: Int) = try {
             .parse<Issue>(it)
     }
 } catch (e: Exception) {
-    e.message?.let(::printlnGitHubWarn)
+    e.message?.let(::printlnGitHubErr)
     null
 }
 

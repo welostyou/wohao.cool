@@ -10,7 +10,8 @@ abstract class Database {
 
     private fun connection(block: Connection.() -> Unit) {
         Class.forName("org.sqlite.JDBC")
-        DriverManager.getConnection("jdbc:sqlite:${if (isWindows10) "" else "/"}home/program/database/$fileName.db").use(block)
+        DriverManager.getConnection("jdbc:sqlite:${if (isWindows10) "" else "/"}home/program/database/$fileName.db")
+            .use(block)
     }
 
     protected fun create(sql: String) {

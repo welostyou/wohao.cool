@@ -1,6 +1,6 @@
 package main
 
-import github.webhooks.githubWebhooks
+import github.githubWebhooks
 import io.ktor.application.Application
 import io.ktor.routing.routing
 import secret.applicationShutdown

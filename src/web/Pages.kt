@@ -1,5 +1,6 @@
 package web
 
+import github.GitHubIssueDatabase
 import io.ktor.application.call
 import io.ktor.routing.Routing
 import io.ktor.routing.get
@@ -15,15 +16,20 @@ fun Routing.pages() {
 
     get("/search-result/{value}") {
         val value = call.parameters["value"]
-        val list = kotlinx.html.emptyMap
-        respondListPage("共${list.size}个搜索结果：$value", list)
+        val list = hashMapOf<String, String>()
+        if (value != null) {
+            GitHubIssueDatabase.all()
+                .filter { it.title.contains(value) }
+                .forEach { list["/markdown/github/${it.id}"] = it.title }
+            respondListPage("共${list.size}个搜索结果：$value", list)
+        }
     }
 
-    get("/markdown/{value}") {
-        //val value = call.parameters["value"]
-        val title = ""
-        val markdown = ""
-        respondMarkdownPage(title, markdown)
+    get("/markdown/github/{value}") {
+        val value = call.parameters["value"]?.toInt()
+        if (value != null)
+            GitHubIssueDatabase.getIssueById(value)?.apply { respondMarkdownPage(title, body) }
+        else
+            respondMarkdownPage()
     }
 }
-

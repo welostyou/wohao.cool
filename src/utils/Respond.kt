@@ -12,7 +12,7 @@ suspend fun PContext.respondSearchPage(placeholder: String, path: String) {
             default()
             script(type = "text/javascript") {
                 unsafe {
-                    raw("""function searchOnKeyUp(ev) {var e = event || window.event || arguments.callee.caller.arguments[0];if (e && e.keyCode === 13) {var s = ev.value;ev.value = "";window.open("$path" + s);}}""")
+                    raw("""function searchOnKeyUp(ev) {var e = event || window.event || arguments.callee.caller.arguments[0];if (e && e.keyCode === 13) {var s = ev.value;if(s.length !== 0){ev.value = "";window.open("$path" + s);}}}""")
                 }
             }
         }
@@ -47,17 +47,16 @@ suspend fun PContext.respondListPage(title: String, list: Map<String, String>) {
     }
 }
 
-suspend fun PContext.respondMarkdownPage(title: String, body: String) {
+suspend fun PContext.respondMarkdownPage(title: String = "", body: String = "") {
     call.respondHtml {
-        head { default() }
+        head {
+            default()
+            styleLink("/assets/css/github-markdown.css")
+        }
         body {
             div("container") {
                 textHeader(title)
-                if (body.isEmpty()) {
-                    div("markdown") { +"Null" }
-                } else {
-                    div("markdown") { unsafe { raw(body) } }
-                }
+                div("markdown-body") { unsafe { raw(body) } }
             }
         }
     }
@@ -82,7 +81,9 @@ private fun HEAD.default() {
 private fun DIV.textHeader(title: String) {
     div("header") {
         logo()
-        p("title") { +title }
+        p("title") {
+            +if (title.isEmpty()) "没有内容" else title
+        }
     }
 }
 
