@@ -1,8 +1,7 @@
-package github
+package utils
 
 import com.github.kittinunf.fuel.Fuel
-import utils.format
-import utils.responseString
+import github.GitHubApiPath
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*

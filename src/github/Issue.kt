@@ -3,9 +3,7 @@ package github
 import com.beust.klaxon.Json
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
-import utils.klaxonConverter
-import utils.printlnGitHubErr
-import utils.responseString
+import utils.*
 
 enum class IssueAction {
     OPENED,
