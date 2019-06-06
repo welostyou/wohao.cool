@@ -6,7 +6,7 @@ import kotlinx.html.*
 import web.tags.path
 import web.tags.svg
 
-suspend fun PContext.respondSearchPage(placeholder: String, path: String) {
+suspend fun PContext.respondSearchPage(placeholder: String, path: String, list: Map<String, String>? = null) {
     call.respondHtml {
         head {
             default()
@@ -25,8 +25,14 @@ suspend fun PContext.respondSearchPage(placeholder: String, path: String) {
                         this.placeholder = placeholder
                     }
                 }
+                if (list != null) {
+                    ul("list") {
+                        list.forEach { href, title ->
+                            li { a(href) { +title } }
+                        }
+                    }
+                }
             }
-
         }
     }
 }
