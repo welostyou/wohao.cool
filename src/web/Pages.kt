@@ -14,7 +14,7 @@ fun Routing.pages() {
     get("/") {
         val list = hashMapOf<String, String>()
         GitHubIssueDatabase.all().forEach { list["/markdown/github/${it.id}"] = it.title }
-        respondSearchPage("请输入内容：关键字搜索&指令", "/search-result/", list)
+        respondSearchPage("请输入内容：关键字搜索", "/search-result/", list)
     }
 
     get("/search-result/{value}") {
