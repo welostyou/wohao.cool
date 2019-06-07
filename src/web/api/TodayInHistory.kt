@@ -9,7 +9,7 @@ import java.net.URL
 import java.util.*
 
 fun Routing.apiOfTodayInHistory() {
-    get("/web/api/today-in-history/{month}/{day}") {
+    get("/api/today-in-history/{month}/{day}") {
         call.apply {
             val month = parameters["month"]
             val day = parameters["day"]

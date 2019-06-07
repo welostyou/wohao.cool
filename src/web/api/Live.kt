@@ -9,7 +9,7 @@ import org.jsoup.Jsoup
 import java.net.URL
 
 fun Routing.apiOfLive() {
-    get("/web/api/live/{platform}/{room_id}") {
+    get("/api/live/{platform}/{room_id}") {
         call.apply {
             val platform = parameters["platform"]
             val id = parameters["room_id"]
